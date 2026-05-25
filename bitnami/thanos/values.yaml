@@ -959,6 +959,89 @@ query:
       ## @param query.ingress.grpc.pathType Ingress Path type
       ##
       pathType: ImplementationSpecific
+  ## Configure the HTTPRoute resources that allow you to access Thanos Query
+  ## ref: https://gateway-api.sigs.k8s.io/api-types/httproute/
+  ##
+  httproute:
+    ## @param query.httproute.enabled Enable HTTPRoute resource
+    ##
+    enabled: false
+    ## @param query.httproute.parentRefs Gateway API parentRefs for the HTTPRoute
+    ## e.g:
+    ## parentRefs:
+    ##   - name: envoy-gateway
+    ##     namespace: envoy-gateway-system
+    ##     sectionName: http
+    ##
+    parentRefs: []
+    ## @param query.httproute.labels Additional labels for the HTTPRoute resource
+    ##
+    labels: {}
+    ## @param query.httproute.annotations Additional annotations for the HTTPRoute resource
+    ##
+    annotations: {}
+    ## @param query.httproute.hostnames Hostnames for the HTTPRoute. Defaults to `query.ingress.hostname` and `query.ingress.extraHosts` when empty
+    ##
+    hostnames: []
+    ## @param query.httproute.path HTTPRoute path. Defaults to `query.ingress.path` when empty
+    ##
+    path: ""
+    ## @param query.httproute.pathType HTTPRoute path match type. Defaults to `query.ingress.pathType` converted to Gateway API semantics when empty
+    ##
+    pathType: ""
+    ## @param query.httproute.matches HTTPRoute match rules. Defaults to a path match from `query.httproute.path` when empty
+    ##
+    matches: []
+    ## @param query.httproute.filters HTTPRoute filters
+    ##
+    filters: []
+    ## @param query.httproute.timeouts HTTPRoute timeouts
+    ##
+    timeouts: {}
+    ## @param query.httproute.rules HTTPRoute rules. When set, this overrides generated matches, filters, backendRefs, and timeouts
+    ##
+    rules: []
+    ## Configure the HTTPRoute resource that allows you to access Thanos Query GRPC
+    ##
+    grpc:
+      ## @param query.httproute.grpc.enabled Enable HTTPRoute resource for GRPC
+      ##
+      enabled: false
+      ## @param query.httproute.grpc.parentRefs Gateway API parentRefs for the GRPC HTTPRoute
+      ## e.g:
+      ## parentRefs:
+      ##   - name: envoy-gateway
+      ##     namespace: envoy-gateway-system
+      ##     sectionName: grpc
+      ##
+      parentRefs: []
+      ## @param query.httproute.grpc.labels Additional labels for the GRPC HTTPRoute resource
+      ##
+      labels: {}
+      ## @param query.httproute.grpc.annotations Additional annotations for the GRPC HTTPRoute resource
+      ##
+      annotations: {}
+      ## @param query.httproute.grpc.hostnames Hostnames for the GRPC HTTPRoute. Defaults to `query.ingress.grpc.hostname` and `query.ingress.grpc.extraHosts` when empty
+      ##
+      hostnames: []
+      ## @param query.httproute.grpc.path HTTPRoute path for the GRPC route. Defaults to `query.ingress.grpc.path` when empty
+      ##
+      path: ""
+      ## @param query.httproute.grpc.pathType HTTPRoute path match type for the GRPC route. Defaults to `query.ingress.grpc.pathType` converted to Gateway API semantics when empty
+      ##
+      pathType: ""
+      ## @param query.httproute.grpc.matches HTTPRoute match rules for the GRPC route. Defaults to a path match from `query.httproute.grpc.path` when empty
+      ##
+      matches: []
+      ## @param query.httproute.grpc.filters HTTPRoute filters for the GRPC route
+      ##
+      filters: []
+      ## @param query.httproute.grpc.timeouts HTTPRoute timeouts for the GRPC route
+      ##
+      timeouts: {}
+      ## @param query.httproute.grpc.rules HTTPRoute rules for the GRPC route. When set, this overrides generated matches, filters, backendRefs, and timeouts
+      ##
+      rules: []
 ## @section Thanos Query Frontend parameters
 queryFrontend:
   ## @param queryFrontend.enabled Enable/disable Thanos Query Frontend component
@@ -1510,6 +1593,48 @@ queryFrontend:
     ## @param queryFrontend.ingress.pathType Ingress path type
     ##
     pathType: ImplementationSpecific
+  ## Configure the HTTPRoute resource that allows you to access Thanos Query Frontend
+  ## ref: https://gateway-api.sigs.k8s.io/api-types/httproute/
+  ##
+  httproute:
+    ## @param queryFrontend.httproute.enabled Enable HTTPRoute resource
+    ##
+    enabled: false
+    ## @param queryFrontend.httproute.parentRefs Gateway API parentRefs for the HTTPRoute
+    ## e.g:
+    ## parentRefs:
+    ##   - name: envoy-gateway
+    ##     namespace: envoy-gateway-system
+    ##     sectionName: http
+    ##
+    parentRefs: []
+    ## @param queryFrontend.httproute.labels Additional labels for the HTTPRoute resource
+    ##
+    labels: {}
+    ## @param queryFrontend.httproute.annotations Additional annotations for the HTTPRoute resource
+    ##
+    annotations: {}
+    ## @param queryFrontend.httproute.hostnames Hostnames for the HTTPRoute. Defaults to `queryFrontend.ingress.hostname` and `queryFrontend.ingress.extraHosts` when empty
+    ##
+    hostnames: []
+    ## @param queryFrontend.httproute.path HTTPRoute path. Defaults to `queryFrontend.ingress.path` when empty
+    ##
+    path: ""
+    ## @param queryFrontend.httproute.pathType HTTPRoute path match type. Defaults to `queryFrontend.ingress.pathType` converted to Gateway API semantics when empty
+    ##
+    pathType: ""
+    ## @param queryFrontend.httproute.matches HTTPRoute match rules. Defaults to a path match from `queryFrontend.httproute.path` when empty
+    ##
+    matches: []
+    ## @param queryFrontend.httproute.filters HTTPRoute filters
+    ##
+    filters: []
+    ## @param queryFrontend.httproute.timeouts HTTPRoute timeouts
+    ##
+    timeouts: {}
+    ## @param queryFrontend.httproute.rules HTTPRoute rules. When set, this overrides generated matches, filters, backendRefs, and timeouts
+    ##
+    rules: []
 ## @section Thanos Bucket Web parameters
 bucketweb:
   ## @param bucketweb.enabled Enable/disable Thanos Bucket Web component
@@ -2031,6 +2156,48 @@ bucketweb:
     ## @param bucketweb.ingress.pathType Ingress path type
     ##
     pathType: ImplementationSpecific
+  ## Configure the HTTPRoute resource that allows you to access Thanos Bucketweb
+  ## ref: https://gateway-api.sigs.k8s.io/api-types/httproute/
+  ##
+  httproute:
+    ## @param bucketweb.httproute.enabled Enable HTTPRoute resource
+    ##
+    enabled: false
+    ## @param bucketweb.httproute.parentRefs Gateway API parentRefs for the HTTPRoute
+    ## e.g:
+    ## parentRefs:
+    ##   - name: envoy-gateway
+    ##     namespace: envoy-gateway-system
+    ##     sectionName: http
+    ##
+    parentRefs: []
+    ## @param bucketweb.httproute.labels Additional labels for the HTTPRoute resource
+    ##
+    labels: {}
+    ## @param bucketweb.httproute.annotations Additional annotations for the HTTPRoute resource
+    ##
+    annotations: {}
+    ## @param bucketweb.httproute.hostnames Hostnames for the HTTPRoute. Defaults to `bucketweb.ingress.hostname` and `bucketweb.ingress.extraHosts` when empty
+    ##
+    hostnames: []
+    ## @param bucketweb.httproute.path HTTPRoute path. Defaults to `bucketweb.ingress.path` when empty
+    ##
+    path: ""
+    ## @param bucketweb.httproute.pathType HTTPRoute path match type. Defaults to `bucketweb.ingress.pathType` converted to Gateway API semantics when empty
+    ##
+    pathType: ""
+    ## @param bucketweb.httproute.matches HTTPRoute match rules. Defaults to a path match from `bucketweb.httproute.path` when empty
+    ##
+    matches: []
+    ## @param bucketweb.httproute.filters HTTPRoute filters
+    ##
+    filters: []
+    ## @param bucketweb.httproute.timeouts HTTPRoute timeouts
+    ##
+    timeouts: {}
+    ## @param bucketweb.httproute.rules HTTPRoute rules. When set, this overrides generated matches, filters, backendRefs, and timeouts
+    ##
+    rules: []
 ## @section Thanos Compactor parameters
 compactor:
   ## @param compactor.enabled Enable/disable Thanos Compactor component
@@ -2565,6 +2732,48 @@ compactor:
     ## @param compactor.ingress.pathType Ingress path type
     ##
     pathType: ImplementationSpecific
+  ## Configure the HTTPRoute resource that allows you to access Thanos Compactor
+  ## ref: https://gateway-api.sigs.k8s.io/api-types/httproute/
+  ##
+  httproute:
+    ## @param compactor.httproute.enabled Enable HTTPRoute resource
+    ##
+    enabled: false
+    ## @param compactor.httproute.parentRefs Gateway API parentRefs for the HTTPRoute
+    ## e.g:
+    ## parentRefs:
+    ##   - name: envoy-gateway
+    ##     namespace: envoy-gateway-system
+    ##     sectionName: http
+    ##
+    parentRefs: []
+    ## @param compactor.httproute.labels Additional labels for the HTTPRoute resource
+    ##
+    labels: {}
+    ## @param compactor.httproute.annotations Additional annotations for the HTTPRoute resource
+    ##
+    annotations: {}
+    ## @param compactor.httproute.hostnames Hostnames for the HTTPRoute. Defaults to `compactor.ingress.hostname` and `compactor.ingress.extraHosts` when empty
+    ##
+    hostnames: []
+    ## @param compactor.httproute.path HTTPRoute path. Defaults to `compactor.ingress.path` when empty
+    ##
+    path: ""
+    ## @param compactor.httproute.pathType HTTPRoute path match type. Defaults to `compactor.ingress.pathType` converted to Gateway API semantics when empty
+    ##
+    pathType: ""
+    ## @param compactor.httproute.matches HTTPRoute match rules. Defaults to a path match from `compactor.httproute.path` when empty
+    ##
+    matches: []
+    ## @param compactor.httproute.filters HTTPRoute filters
+    ##
+    filters: []
+    ## @param compactor.httproute.timeouts HTTPRoute timeouts
+    ##
+    timeouts: {}
+    ## @param compactor.httproute.rules HTTPRoute rules. When set, this overrides generated matches, filters, backendRefs, and timeouts
+    ##
+    rules: []
   ## Persistence parameters
   ##
   persistence:
@@ -3328,6 +3537,89 @@ storegateway:
       ## @param storegateway.ingress.grpc.pathType Ingress Path type
       ##
       pathType: ImplementationSpecific
+  ## Configure the HTTPRoute resources that allow you to access Thanos Store Gateway
+  ## ref: https://gateway-api.sigs.k8s.io/api-types/httproute/
+  ##
+  httproute:
+    ## @param storegateway.httproute.enabled Enable HTTPRoute resource
+    ##
+    enabled: false
+    ## @param storegateway.httproute.parentRefs Gateway API parentRefs for the HTTPRoute
+    ## e.g:
+    ## parentRefs:
+    ##   - name: envoy-gateway
+    ##     namespace: envoy-gateway-system
+    ##     sectionName: http
+    ##
+    parentRefs: []
+    ## @param storegateway.httproute.labels Additional labels for the HTTPRoute resource
+    ##
+    labels: {}
+    ## @param storegateway.httproute.annotations Additional annotations for the HTTPRoute resource
+    ##
+    annotations: {}
+    ## @param storegateway.httproute.hostnames Hostnames for the HTTPRoute. Defaults to `storegateway.ingress.hostname` and `storegateway.ingress.extraHosts` when empty
+    ##
+    hostnames: []
+    ## @param storegateway.httproute.path HTTPRoute path. Defaults to `storegateway.ingress.path` when empty
+    ##
+    path: ""
+    ## @param storegateway.httproute.pathType HTTPRoute path match type. Defaults to `storegateway.ingress.pathType` converted to Gateway API semantics when empty
+    ##
+    pathType: ""
+    ## @param storegateway.httproute.matches HTTPRoute match rules. Defaults to a path match from `storegateway.httproute.path` when empty
+    ##
+    matches: []
+    ## @param storegateway.httproute.filters HTTPRoute filters
+    ##
+    filters: []
+    ## @param storegateway.httproute.timeouts HTTPRoute timeouts
+    ##
+    timeouts: {}
+    ## @param storegateway.httproute.rules HTTPRoute rules. When set, this overrides generated matches, filters, backendRefs, and timeouts
+    ##
+    rules: []
+    ## Configure the HTTPRoute resource that allows you to access Thanos Store Gateway GRPC
+    ##
+    grpc:
+      ## @param storegateway.httproute.grpc.enabled Enable HTTPRoute resource for GRPC
+      ##
+      enabled: false
+      ## @param storegateway.httproute.grpc.parentRefs Gateway API parentRefs for the GRPC HTTPRoute
+      ## e.g:
+      ## parentRefs:
+      ##   - name: envoy-gateway
+      ##     namespace: envoy-gateway-system
+      ##     sectionName: grpc
+      ##
+      parentRefs: []
+      ## @param storegateway.httproute.grpc.labels Additional labels for the GRPC HTTPRoute resource
+      ##
+      labels: {}
+      ## @param storegateway.httproute.grpc.annotations Additional annotations for the GRPC HTTPRoute resource
+      ##
+      annotations: {}
+      ## @param storegateway.httproute.grpc.hostnames Hostnames for the GRPC HTTPRoute. Defaults to `storegateway.ingress.grpc.hostname` and `storegateway.ingress.grpc.extraHosts` when empty
+      ##
+      hostnames: []
+      ## @param storegateway.httproute.grpc.path HTTPRoute path for the GRPC route. Defaults to `storegateway.ingress.grpc.path` when empty
+      ##
+      path: ""
+      ## @param storegateway.httproute.grpc.pathType HTTPRoute path match type for the GRPC route. Defaults to `storegateway.ingress.grpc.pathType` converted to Gateway API semantics when empty
+      ##
+      pathType: ""
+      ## @param storegateway.httproute.grpc.matches HTTPRoute match rules for the GRPC route. Defaults to a path match from `storegateway.httproute.grpc.path` when empty
+      ##
+      matches: []
+      ## @param storegateway.httproute.grpc.filters HTTPRoute filters for the GRPC route
+      ##
+      filters: []
+      ## @param storegateway.httproute.grpc.timeouts HTTPRoute timeouts for the GRPC route
+      ##
+      timeouts: {}
+      ## @param storegateway.httproute.grpc.rules HTTPRoute rules for the GRPC route. When set, this overrides generated matches, filters, backendRefs, and timeouts
+      ##
+      rules: []
   ## Sharded parameters
   ## @param storegateway.sharded.enabled Enable sharding for Thanos Store Gateway
   ## @param storegateway.sharded.hashPartitioning.shards Setting hashPartitioning will create multiple store statefulsets based on the number of shards specified using the hashmod of the blocks
@@ -3999,6 +4291,48 @@ ruler:
     ## @param ruler.ingress.pathType Ingress path type
     ##
     pathType: ImplementationSpecific
+  ## Configure the HTTPRoute resource that allows you to access Thanos Ruler
+  ## ref: https://gateway-api.sigs.k8s.io/api-types/httproute/
+  ##
+  httproute:
+    ## @param ruler.httproute.enabled Enable HTTPRoute resource
+    ##
+    enabled: false
+    ## @param ruler.httproute.parentRefs Gateway API parentRefs for the HTTPRoute
+    ## e.g:
+    ## parentRefs:
+    ##   - name: envoy-gateway
+    ##     namespace: envoy-gateway-system
+    ##     sectionName: http
+    ##
+    parentRefs: []
+    ## @param ruler.httproute.labels Additional labels for the HTTPRoute resource
+    ##
+    labels: {}
+    ## @param ruler.httproute.annotations Additional annotations for the HTTPRoute resource
+    ##
+    annotations: {}
+    ## @param ruler.httproute.hostnames Hostnames for the HTTPRoute. Defaults to `ruler.ingress.hostname` and `ruler.ingress.extraHosts` when empty
+    ##
+    hostnames: []
+    ## @param ruler.httproute.path HTTPRoute path. Defaults to `ruler.ingress.path` when empty
+    ##
+    path: ""
+    ## @param ruler.httproute.pathType HTTPRoute path match type. Defaults to `ruler.ingress.pathType` converted to Gateway API semantics when empty
+    ##
+    pathType: ""
+    ## @param ruler.httproute.matches HTTPRoute match rules. Defaults to a path match from `ruler.httproute.path` when empty
+    ##
+    matches: []
+    ## @param ruler.httproute.filters HTTPRoute filters
+    ##
+    filters: []
+    ## @param ruler.httproute.timeouts HTTPRoute timeouts
+    ##
+    timeouts: {}
+    ## @param ruler.httproute.rules HTTPRoute rules. When set, this overrides generated matches, filters, backendRefs, and timeouts
+    ##
+    rules: []
 ## @section Thanos Receive parameters
 receive:
   ## @param receive.enabled Enable/disable Thanos Receive component
@@ -4671,6 +5005,54 @@ receive:
     ## @param receive.ingress.pathType Ingress Path type
     ##
     pathType: ImplementationSpecific
+  ## Configure the HTTPRoute resource that allows you to access Thanos Receive
+  ## ref: https://gateway-api.sigs.k8s.io/api-types/httproute/
+  ##
+  httproute:
+    ## @param receive.httproute.enabled Enable HTTPRoute resource
+    ##
+    enabled: false
+    ## @param receive.httproute.parentRefs Gateway API parentRefs for the HTTPRoute
+    ## e.g:
+    ## parentRefs:
+    ##   - name: envoy-gateway
+    ##     namespace: envoy-gateway-system
+    ##     sectionName: http
+    ##
+    parentRefs: []
+    ## @param receive.httproute.labels Additional labels for the HTTPRoute resource
+    ##
+    labels: {}
+    ## @param receive.httproute.annotations Additional annotations for the HTTPRoute resource
+    ##
+    annotations: {}
+    ## @param receive.httproute.hostnames Hostnames for the HTTPRoute. Defaults to `receive.ingress.hostname` when empty
+    ##
+    hostnames: []
+    ## @param receive.httproute.path HTTPRoute path for the receive HTTP UI/API route. Defaults to `receive.ingress.path` when empty
+    ##
+    path: ""
+    ## @param receive.httproute.pathType HTTPRoute path match type for the receive HTTP UI/API route. Defaults to `receive.ingress.pathType` converted to Gateway API semantics when empty
+    ##
+    pathType: ""
+    ## @param receive.httproute.remotePath HTTPRoute path for the remote-write route
+    ##
+    remotePath: /api/v1/receive
+    ## @param receive.httproute.remotePathType HTTPRoute path match type for the remote-write route. Defaults to `receive.ingress.pathType` converted to Gateway API semantics when empty
+    ##
+    remotePathType: ""
+    ## @param receive.httproute.matches HTTPRoute match rules for the receive HTTP UI/API route. Defaults to a path match from `receive.httproute.path` when empty
+    ##
+    matches: []
+    ## @param receive.httproute.filters HTTPRoute filters applied to the default receive routes
+    ##
+    filters: []
+    ## @param receive.httproute.timeouts HTTPRoute timeouts applied to the default receive routes
+    ##
+    timeouts: {}
+    ## @param receive.httproute.rules HTTPRoute rules. When set, this overrides generated matches, filters, backendRefs, and timeouts
+    ##
+    rules: []
 ## @section Thanos Receive Distributor parameters
 receiveDistributor:
   ## @param receiveDistributor.enabled Enable/disable Thanos Receive Distributor component

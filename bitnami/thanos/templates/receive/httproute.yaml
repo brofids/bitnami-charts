@@ -1,0 +1,99 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if and .Values.receive.enabled .Values.receive.httproute.enabled -}}
+{{- if or (not .Values.receive.httproute.parentRefs) (lt (len .Values.receive.httproute.parentRefs) 1) }}
+{{- fail "receive.httproute.parentRefs must be defined and contain at least one Gateway reference" }}
+{{- end }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "thanos.receive.fullname" . }}
+  namespace: {{ include "common.names.namespace" . }}
+  {{- $labels := include "common.tplvalues.merge" ( dict "values" ( list .Values.receive.httproute.labels .Values.commonLabels ) "context" . ) }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" $labels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/component: receive
+  {{- if or .Values.receive.httproute.annotations .Values.commonAnnotations }}
+  {{- $annotations := include "common.tplvalues.merge" ( dict "values" ( list .Values.receive.httproute.annotations .Values.commonAnnotations ) "context" . ) }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    {{- range $idx, $parentRef := .Values.receive.httproute.parentRefs }}
+    - group: {{ default "gateway.networking.k8s.io" $parentRef.group }}
+      kind: {{ default "Gateway" $parentRef.kind }}
+      name: {{ include "common.tplvalues.render" ( dict "value" (required (printf "receive.httproute.parentRefs[%d].name is required" $idx) $parentRef.name) "context" $ ) }}
+      {{- if $parentRef.namespace }}
+      namespace: {{ include "common.tplvalues.render" ( dict "value" $parentRef.namespace "context" $ ) }}
+      {{- end }}
+      {{- if $parentRef.sectionName }}
+      sectionName: {{ include "common.tplvalues.render" ( dict "value" $parentRef.sectionName "context" $ ) }}
+      {{- end }}
+      {{- if $parentRef.port }}
+      port: {{ $parentRef.port }}
+      {{- end }}
+    {{- end }}
+  {{- if .Values.receive.httproute.hostnames }}
+  hostnames: {{- include "common.tplvalues.render" ( dict "value" .Values.receive.httproute.hostnames "context" $ ) | nindent 4 }}
+  {{- else if .Values.receive.ingress.hostname }}
+  hostnames:
+    - {{ include "common.tplvalues.render" ( dict "value" .Values.receive.ingress.hostname "context" $ ) | quote }}
+  {{- end }}
+  rules:
+    {{- if .Values.receive.httproute.rules }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.receive.httproute.rules "context" $ ) | nindent 4 }}
+    {{- else }}
+    - matches:
+        - path:
+            {{- $remotePathType := default .Values.receive.ingress.pathType .Values.receive.httproute.remotePathType }}
+            {{- if eq $remotePathType "Exact" }}
+            type: Exact
+            {{- else if eq $remotePathType "RegularExpression" }}
+            type: RegularExpression
+            {{- else }}
+            type: PathPrefix
+            {{- end }}
+            value: {{ default "/api/v1/receive" .Values.receive.httproute.remotePath | quote }}
+      {{- if .Values.receive.httproute.filters }}
+      filters: {{- include "common.tplvalues.render" ( dict "value" .Values.receive.httproute.filters "context" $ ) | nindent 8 }}
+      {{- end }}
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: {{ include "thanos.receive.fullname" . }}
+          port: {{ .Values.receive.service.ports.remote }}
+          weight: 1
+      {{- if .Values.receive.httproute.timeouts }}
+      timeouts: {{- include "common.tplvalues.render" ( dict "value" .Values.receive.httproute.timeouts "context" $ ) | nindent 8 }}
+      {{- end }}
+    - matches:
+        {{- if .Values.receive.httproute.matches }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.receive.httproute.matches "context" $ ) | nindent 8 }}
+        {{- else }}
+        - path:
+            {{- $pathType := default .Values.receive.ingress.pathType .Values.receive.httproute.pathType }}
+            {{- if eq $pathType "Exact" }}
+            type: Exact
+            {{- else if eq $pathType "RegularExpression" }}
+            type: RegularExpression
+            {{- else }}
+            type: PathPrefix
+            {{- end }}
+            value: {{ default .Values.receive.ingress.path .Values.receive.httproute.path | quote }}
+        {{- end }}
+      {{- if .Values.receive.httproute.filters }}
+      filters: {{- include "common.tplvalues.render" ( dict "value" .Values.receive.httproute.filters "context" $ ) | nindent 8 }}
+      {{- end }}
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: {{ include "thanos.receive.fullname" . }}
+          port: {{ .Values.receive.service.ports.http }}
+          weight: 1
+      {{- if .Values.receive.httproute.timeouts }}
+      timeouts: {{- include "common.tplvalues.render" ( dict "value" .Values.receive.httproute.timeouts "context" $ ) | nindent 8 }}
+      {{- end }}
+    {{- end }}
+{{- end }}

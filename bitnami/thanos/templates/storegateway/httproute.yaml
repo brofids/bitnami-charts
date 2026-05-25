@@ -1,0 +1,81 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if and .Values.storegateway.enabled .Values.storegateway.httproute.enabled -}}
+{{- if or (not .Values.storegateway.httproute.parentRefs) (lt (len .Values.storegateway.httproute.parentRefs) 1) }}
+{{- fail "storegateway.httproute.parentRefs must be defined and contain at least one Gateway reference" }}
+{{- end }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "thanos.storegateway.fullname" . }}
+  namespace: {{ include "common.names.namespace" . }}
+  {{- $labels := include "common.tplvalues.merge" ( dict "values" ( list .Values.storegateway.httproute.labels .Values.commonLabels ) "context" . ) }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" $labels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/component: storegateway
+  {{- if or .Values.storegateway.httproute.annotations .Values.commonAnnotations }}
+  {{- $annotations := include "common.tplvalues.merge" ( dict "values" ( list .Values.storegateway.httproute.annotations .Values.commonAnnotations ) "context" . ) }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    {{- range $idx, $parentRef := .Values.storegateway.httproute.parentRefs }}
+    - group: {{ default "gateway.networking.k8s.io" $parentRef.group }}
+      kind: {{ default "Gateway" $parentRef.kind }}
+      name: {{ include "common.tplvalues.render" ( dict "value" (required (printf "storegateway.httproute.parentRefs[%d].name is required" $idx) $parentRef.name) "context" $ ) }}
+      {{- if $parentRef.namespace }}
+      namespace: {{ include "common.tplvalues.render" ( dict "value" $parentRef.namespace "context" $ ) }}
+      {{- end }}
+      {{- if $parentRef.sectionName }}
+      sectionName: {{ include "common.tplvalues.render" ( dict "value" $parentRef.sectionName "context" $ ) }}
+      {{- end }}
+      {{- if $parentRef.port }}
+      port: {{ $parentRef.port }}
+      {{- end }}
+    {{- end }}
+  {{- if .Values.storegateway.httproute.hostnames }}
+  hostnames: {{- include "common.tplvalues.render" ( dict "value" .Values.storegateway.httproute.hostnames "context" $ ) | nindent 4 }}
+  {{- else if or .Values.storegateway.ingress.hostname .Values.storegateway.ingress.extraHosts }}
+  hostnames:
+    {{- if .Values.storegateway.ingress.hostname }}
+    - {{ include "common.tplvalues.render" ( dict "value" .Values.storegateway.ingress.hostname "context" $ ) | quote }}
+    {{- end }}
+    {{- range .Values.storegateway.ingress.extraHosts }}
+    - {{ include "common.tplvalues.render" ( dict "value" .name "context" $ ) | quote }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- if .Values.storegateway.httproute.rules }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.storegateway.httproute.rules "context" $ ) | nindent 4 }}
+    {{- else }}
+    - matches:
+        {{- if .Values.storegateway.httproute.matches }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.storegateway.httproute.matches "context" $ ) | nindent 8 }}
+        {{- else }}
+        - path:
+            {{- $pathType := default .Values.storegateway.ingress.pathType .Values.storegateway.httproute.pathType }}
+            {{- if eq $pathType "Exact" }}
+            type: Exact
+            {{- else if eq $pathType "RegularExpression" }}
+            type: RegularExpression
+            {{- else }}
+            type: PathPrefix
+            {{- end }}
+            value: {{ default .Values.storegateway.ingress.path .Values.storegateway.httproute.path | quote }}
+        {{- end }}
+      {{- if .Values.storegateway.httproute.filters }}
+      filters: {{- include "common.tplvalues.render" ( dict "value" .Values.storegateway.httproute.filters "context" $ ) | nindent 8 }}
+      {{- end }}
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: {{ include "thanos.storegateway.fullname" . }}
+          port: {{ .Values.storegateway.service.ports.http }}
+          weight: 1
+      {{- if .Values.storegateway.httproute.timeouts }}
+      timeouts: {{- include "common.tplvalues.render" ( dict "value" .Values.storegateway.httproute.timeouts "context" $ ) | nindent 8 }}
+      {{- end }}
+    {{- end }}
+{{- end }}

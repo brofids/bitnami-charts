@@ -1,0 +1,1 @@
+Use kubectx rancher-dev to make sure you're in the development cluster before invoking any kubernetes commands
